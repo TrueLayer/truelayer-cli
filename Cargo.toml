@@ -1,21 +1,13 @@
 [package]
-name = "webhook-router"
+name = "webhook-testing"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-#truelayer-opentracing = { version = "0.18", registry = "truelayer-rustlayer" }
-#truelayer-pubsub = { version = "0.19", registry = "truelayer-rustlayer" }
-#truelayer-pubsub-observability = { version = "0.28", registry = "truelayer-rustlayer" }
-#truelayer-root-span = { version = "1", registry = "truelayer-rustlayer" }
-#truelayer-telemetry = { version = "0.18.8", registry = "truelayer-rustlayer" }
-#truelayer-actix-web = { version = "2", registry = "truelayer-rustlayer" }
-actix-web = "4"
 truelayer-rust = {git = "https://github.com/TrueLayer/truelayer-rust"}
-
 json = "*"
 anyhow = "*"
 reqwest = { version = "*", features = ["blocking"] }
 serde_json = "*"
-clap = "*"
+clap = { version = "*", features = ["derive"]}
