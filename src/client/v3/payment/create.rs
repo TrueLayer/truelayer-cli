@@ -1,10 +1,9 @@
 use std::future::Future;
 use truelayer_rust::{TrueLayerClient, apis::auth::Credentials, Error};
 use truelayer_rust::apis::payments::{AccountIdentifier, Currency, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, PaymentMethod, ProviderSelection, CreatePaymentResponse};
-use crate::client::v3::client::new_client;
 use anyhow::Result;
 
-pub async fn create_payment(client: truelayer_rust::TrueLayerClient) -> anyhow::Result<String> {
+pub async fn create_payment(client: &truelayer_rust::TrueLayerClient) -> anyhow::Result<String> {
     let payment_id = match client.payments.create(&CreatePaymentRequest{
         amount_in_minor: 0,
         currency: Currency::Gbp,
