@@ -6,16 +6,27 @@ use clap::{arg, Parser};
 
 #[derive(Parser, Debug)]
 struct Args {
-    #[clap(short, long, value_parser)]
-    private_key: String,
-    #[clap(short, long, value_parser)]
-    mode: String,
+    #[clap(long, value_parser)]
+    pub private_key: String,
+    #[clap(long, value_parser)]
+    pub client_secret: String,
+    #[clap(long, value_parser)]
+    pub client_id: String,
+    #[clap(long, value_parser)]
+    pub kid: String,
+    #[clap(long, value_parser)]
+    pub mode: String,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
-    let contents = fs::read_to_string(&args.private_key)
-        .expect("Could not read the private key file");
-    println!("{}", args.private_key);
-    println!("{}", contents);
+    let contents = fs::read_to_string(&args.private_key);
+    // println!("{}", contents.expect("no"));
+    let commander = commands::commander::new(args.client_id, args.client_secret, args.kid, contents.expect("Error while reading key content"));
+
+    match args.mode.as_ref() {
+        "a" => commander.generate_settled_event().await,
+        &_ => panic!("Some error")
+    }
 }

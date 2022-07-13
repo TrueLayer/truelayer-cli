@@ -7,52 +7,46 @@ use crate::client::v3::payment::authorizationflow::start::start_authorization_fl
 use crate::client::v3::payment::create::create_payment;
 use crate::client::v3::payment::mockprovider::execute_payment;
 
-fn new_truelayer_client(client_id: String, client_secret: Token, private_key: Vec<u8>) -> truelayer_rust::TrueLayerClient {
+fn new_truelayer_client(client_id: String, client_secret: Token, kid: String, private_key: Vec<u8>) -> truelayer_rust::TrueLayerClient {
     TrueLayerClient::builder(Credentials::ClientCredentials {
         client_id,
         client_secret,
         scope: "payments".into(),
     })
-        .with_signing_key("my-kid", private_key)
+        .with_signing_key(kid.as_ref(), private_key)
         .with_environment(Environment::Sandbox)
         .build()
 }
 
-pub fn new(client_id: String, client_secret: String, private_key: String) -> impl Client {
-    ClientImpl{
+pub fn new(client_id: String, client_secret: String, kid: String, private_key: String) -> Client {
+    Client{
         truelayer_client: new_truelayer_client(
             client_id,
             client_secret.into(),
+            kid,
             private_key.into()
         )
     }
 }
 
-trait Client {
-    fn create_payment(&self) -> Box<dyn Future<Output = anyhow::Result<String>>>;
-    fn start_authorization(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>>;
-    fn submit_gb_provider(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>>;
-    fn execute_payment(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>>;
-}
-
-struct ClientImpl {
+pub struct Client {
     truelayer_client: TrueLayerClient,
 }
 
-impl Client for ClientImpl {
-    fn create_payment(&self) -> Box<dyn Future<Output = anyhow::Result<String>>> {
-         Box::new(create_payment(&self.truelayer_client) )
+impl Client {
+    pub async fn create_payment(&self) -> anyhow::Result<String> {
+         create_payment(&self.truelayer_client).await
     }
 
-    fn start_authorization(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>> {
-        Box::new(start_authorization_flow(payment_id, &self.truelayer_client))
+    pub async fn start_authorization(&self, payment_id: &String) -> anyhow::Result<()> {
+        start_authorization_flow(payment_id, &self.truelayer_client).await
     }
 
-    fn submit_gb_provider(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>> {
-        Box::new(submit_provider_selection(payment_id, &self.truelayer_client))
+    pub async fn submit_gb_provider(&self, payment_id: &String) -> anyhow::Result<()> {
+        submit_provider_selection(payment_id, &self.truelayer_client).await
     }
 
-    fn execute_payment(&self, payment_id: &String) -> Box<dyn Future<Output = anyhow::Result<()>>> {
-        Box::new(execute_payment(payment_id))
+    pub async fn execute_payment(&self, payment_id: &String) -> anyhow::Result<()> {
+        execute_payment(payment_id).await
     }
 }

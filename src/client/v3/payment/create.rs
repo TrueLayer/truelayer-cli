@@ -5,12 +5,12 @@ use anyhow::Result;
 
 pub async fn create_payment(client: &truelayer_rust::TrueLayerClient) -> anyhow::Result<String> {
     let payment_id = match client.payments.create(&CreatePaymentRequest{
-        amount_in_minor: 0,
+        amount_in_minor: 15,
         currency: Currency::Gbp,
         payment_method: PaymentMethod::BankTransfer {
             provider_selection: ProviderSelection::Preselected {
-                provider_id: "".to_string(),
-                scheme_id: "".to_string(),
+                provider_id: "mock-payments-gb-redirect".to_string(),
+                scheme_id: "faster_payments_service".to_string(),
                 remitter: None
             },
             beneficiary: Beneficiary::ExternalAccount {
@@ -19,7 +19,7 @@ pub async fn create_payment(client: &truelayer_rust::TrueLayerClient) -> anyhow:
                     sort_code: "000000".to_string(),
                     account_number:  "12345678".to_string()
                 },
-                reference: "".to_string()
+                reference: "reference".to_string()
             }
         },
         user: CreatePaymentUserRequest::NewUser{

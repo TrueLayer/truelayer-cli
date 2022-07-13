@@ -5,7 +5,7 @@ pub async fn start_authorization_flow(payment_id: &String, client: &truelayer_ru
    match client.payments.start_authorization_flow(payment_id, &StartAuthorizationFlowRequest{
        provider_selection: Some(ProviderSelectionSupported{}),
        redirect: Some(RedirectSupported{
-           return_uri: "localhost:3000".to_string(),
+           return_uri: "http://localhost:3000/callback".to_string(),
            direct_return_uri: None
        }),
        form: None

@@ -1,2 +1,2 @@
 pub mod payment;
-mod client;
+pub mod client;
