@@ -32,7 +32,7 @@ struct Args {
 async fn main() {
     let args = Args::parse();
     match args.command {
-        Sub::GenerateWebhook {
+        Commands::GenerateWebhook {
             private_key,
             client_secret,
             client_id,
