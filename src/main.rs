@@ -1,6 +1,6 @@
 mod client;
 mod commands;
-
+use colored::Colorize;
 use std::fs;
 use clap::{Parser, Subcommand};
 use reqwest::Url;
@@ -9,6 +9,8 @@ use regex::Regex;
 #[derive(Subcommand, Debug)]
 enum Commands {
     GenerateWebhook {
+        #[clap(subcommand)]
+        mode: GenerateWehookMode,
         #[clap(long, value_parser)]
         private_key: String,
         #[clap(long, value_parser)]
@@ -17,8 +19,13 @@ enum Commands {
         client_id: String,
         #[clap(long, value_parser)]
         kid: String,
-        #[clap(long, value_parser)]
-        mode: String,    
+    }
+}
+
+#[derive(Subcommand, Debug)]
+enum GenerateWehookMode {
+    ExecutedSettled {
+
     }
 }
 
@@ -42,10 +49,11 @@ async fn main() {
             let contents = fs::read_to_string(&private_key);
             let commander = commands::commander::new(client_id, client_secret, kid, contents.expect("Error while reading key content"));
 
-            let mode = mode.as_str();
             match mode {
-                "executed-settled" => commander.generate_settled_event().await,
-                &_ => panic!("incorrect mode passed {}", mode)
+                GenerateWehookMode::ExecutedSettled {} => match commander.generate_settled_event().await {
+                    Ok(_) => {}
+                    Err(e) => println!("Error: {}", e.to_string().as_str().red())
+                },
             }
         }
     }

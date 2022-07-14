@@ -1,8 +1,9 @@
-use anyhow::Error;
+use anyhow::{Context, Error};
 use regex::Regex;
 use reqwest::Url;
 use crate::client::v3::client::Client;
 use crate::client::v3::client::new as new_client;
+use colored::Colorize;
 
 pub struct Commander {
     client: Client,
@@ -31,21 +32,30 @@ fn extract_mock_payment_id(uri:&String) -> anyhow::Result<String> {
 }
 
 impl Commander {
-    pub async fn generate_settled_event(&self) {
-        println!("Creating payment");
-        let payment_id = self.client.create_merchant_account_payment().await.expect("Error while creating payment");
-        println!("Created payment with id {}", payment_id);
-        println!("Starting auth");
-        let uri = self.client.start_authorization(&payment_id).await.expect("Error while starting authorization flow");
-        let mock_payment_id = extract_mock_payment_id(&uri).expect("Could not extract mock payment id");
-        let token = extract_token_from_uri(&uri);
-        println!("Mock payment_id: {}", mock_payment_id);
-        println!("Executing payment");
-        self.client.execute_payment(&mock_payment_id, &token.unwrap()).await.expect("Error while executing the payment");
-        ()
-    }
+    pub async fn generate_settled_event(&self) -> anyhow::Result<()> {
+        println!("{}", "Creating merchant account payment".yellow());
+        let payment_id = self.client.create_merchant_account_payment()
+            .await
+            .context("Error while creating merchant account payment")?;
+        println!("{} {}", "Created payment with id".green(), payment_id.as_str().cyan());
 
-    fn generate_failed_event() -> anyhow::Result<()> {
-        todo!()
+        println!("{}", "Starting auth flow".yellow());
+        let uri = self.client.start_authorization(&payment_id)
+            .await
+            .context("Error while starting authorization flow")?;
+        println!("{}", "Authflow successfully started".green());
+
+        let mock_payment_id = extract_mock_payment_id(&uri)
+            .context("Could not extract mock payment id")?;
+        let token = extract_token_from_uri(&uri);
+        println!("{} {}", "Mock payment_id: ".green(), mock_payment_id.as_str().cyan());
+
+        println!("{}", "Executing payment".yellow());
+        self.client.execute_payment(&mock_payment_id, &token.unwrap())
+            .await
+            .context("Error while executing the payment")?;
+        println!("{}", "Payment executed".green());
+        println!("{}", "Completed".green());
+        Ok(())
     }
 }
