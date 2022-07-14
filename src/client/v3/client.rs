@@ -4,7 +4,7 @@ use truelayer_rust::apis::auth::Token;
 use truelayer_rust::client::Environment;
 use crate::client::v3::payment::authorizationflow::provider_selection::submit_provider_selection;
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
-use crate::client::v3::payment::create::create_payment;
+use crate::client::v3::payment::create::{create_merchant_account_payment, create_payment};
 use crate::client::v3::payment::mockprovider::execute_payment;
 
 fn new_truelayer_client(client_id: String, client_secret: Token, kid: String, private_key: Vec<u8>) -> truelayer_rust::TrueLayerClient {
@@ -38,7 +38,11 @@ impl Client {
          create_payment(&self.truelayer_client).await
     }
 
-    pub async fn start_authorization(&self, payment_id: &String) -> anyhow::Result<()> {
+    pub async fn create_merchant_account_payment(&self) -> anyhow::Result<String> {
+        create_merchant_account_payment(&self.truelayer_client).await
+    }
+
+    pub async fn start_authorization(&self, payment_id: &String) -> anyhow::Result<String> {
         start_authorization_flow(payment_id, &self.truelayer_client).await
     }
 
@@ -46,7 +50,7 @@ impl Client {
         submit_provider_selection(payment_id, &self.truelayer_client).await
     }
 
-    pub async fn execute_payment(&self, payment_id: &String) -> anyhow::Result<()> {
-        execute_payment(payment_id).await
+    pub async fn execute_payment(&self, payment_id: &String, token: &String) -> anyhow::Result<()> {
+        execute_payment(payment_id, token).await
     }
 }
