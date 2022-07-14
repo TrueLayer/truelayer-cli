@@ -1,10 +1,10 @@
 mod client;
 mod commands;
-use colored::Colorize;
-use std::fs;
 use clap::{Parser, Subcommand};
-use reqwest::Url;
+use colored::Colorize;
 use regex::Regex;
+use reqwest::Url;
+use std::fs;
 
 #[derive(Subcommand, Debug)]
 enum Commands {
@@ -19,14 +19,12 @@ enum Commands {
         client_id: String,
         #[clap(long, value_parser)]
         kid: String,
-    }
+    },
 }
 
 #[derive(Subcommand, Debug)]
 enum GenerateWehookMode {
-    ExecutedSettled {
-
-    }
+    ExecutedSettled {},
 }
 
 #[derive(Parser, Debug)]
@@ -44,18 +42,24 @@ async fn main() {
             client_secret,
             client_id,
             kid,
-            mode
+            mode,
         } => {
             let contents = fs::read_to_string(&private_key);
-            let commander = commands::commander::new(client_id, client_secret, kid, contents.expect("Error while reading key content"));
+            let commander = commands::commander::new(
+                client_id,
+                client_secret,
+                kid,
+                contents.expect("Error while reading key content"),
+            );
 
             match mode {
-                GenerateWehookMode::ExecutedSettled {} => match commander.generate_settled_event().await {
-                    Ok(_) => {}
-                    Err(e) => println!("Error: {}", e.to_string().as_str().red())
-                },
+                GenerateWehookMode::ExecutedSettled {} => {
+                    match commander.generate_settled_event().await {
+                        Ok(_) => {}
+                        Err(e) => println!("Error: {}", e.to_string().as_str().red()),
+                    }
+                }
             }
         }
     }
-
 }
