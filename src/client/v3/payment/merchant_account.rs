@@ -12,5 +12,5 @@ pub async fn get_gbp_merchant_account_id(
         .filter(|ma| ma.currency == Currency::Gbp)
         .map(|ma| ma.id.clone())
         .last()
-        .ok_or(Error::msg("No GBP merchant account found"))
+        .ok_or_else(|| Error::msg("No GBP merchant account found"))
 }

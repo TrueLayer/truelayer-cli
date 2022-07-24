@@ -1,5 +1,4 @@
 use anyhow::Error;
-use reqwest::Response;
 use serde_json::json;
 
 // const PROVIDER_ACTION: &str = "https://pay-mock-connect.truelayer-sandbox.com/api/single-immediate-payments/{}/action";

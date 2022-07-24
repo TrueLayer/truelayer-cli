@@ -2,8 +2,6 @@ mod client;
 mod commands;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
-use regex::Regex;
-use reqwest::Url;
 use std::fs;
 
 #[derive(Subcommand, Debug)]
@@ -19,6 +17,10 @@ enum Commands {
         client_id: String,
         #[clap(long, value_parser)]
         kid: String,
+    },
+    CreateTunnel {
+        #[clap(long, value_parser)]
+        route_to: String,
     },
 }
 
@@ -45,7 +47,7 @@ async fn main() {
             mode,
         } => {
             let contents = fs::read_to_string(&private_key);
-            let commander = commands::commander::new(
+            let commander = commands::commander::new_with_client(
                 client_id,
                 client_secret,
                 kid,
@@ -59,6 +61,12 @@ async fn main() {
                         Err(e) => println!("Error: {}", e.to_string().as_str().red()),
                     }
                 }
+            }
+        }
+        Commands::CreateTunnel { route_to } => {
+            match commands::commander::new().create_tunnel(route_to).await {
+                Ok(_) => println!("Was okay"),
+                Err(e) => panic!("{}", e),
             }
         }
     }

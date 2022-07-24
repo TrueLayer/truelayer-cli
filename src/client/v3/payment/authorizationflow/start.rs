@@ -1,14 +1,12 @@
 use anyhow::Error;
-use regex::Regex;
-use reqwest::Url;
 use truelayer_rust::apis::payments::{
     AuthorizationFlowNextAction, AuthorizationFlowResponseStatus, ProviderSelectionSupported,
-    RedirectSupported, StartAuthorizationFlowRequest, StartAuthorizationFlowResponse,
+    RedirectSupported, StartAuthorizationFlowRequest,
 };
 
 // Returns uri
 pub async fn start_authorization_flow(
-    payment_id: &String,
+    payment_id: &str,
     client: &truelayer_rust::TrueLayerClient,
 ) -> anyhow::Result<String> {
     let response = client
@@ -29,19 +27,19 @@ pub async fn start_authorization_flow(
         AuthorizationFlowResponseStatus::Authorizing => {
             match response
                 .authorization_flow
-                .ok_or(Error::msg("Authorization flow object not found"))?
+                .ok_or_else(|| Error::msg("Authorization flow object not found"))?
                 .actions
-                .ok_or(Error::msg("Actions in authorization flow not found"))?
+                .ok_or_else(|| Error::msg("Actions in authorization flow not found"))?
                 .next
             {
-                AuthorizationFlowNextAction::Redirect { uri, metadata } => Ok(uri),
+                AuthorizationFlowNextAction::Redirect { uri, metadata: _ } => Ok(uri),
                 _ => Err(Error::msg(
                     "Next action is not redirect, there is a problem with the flow",
                 )),
             }
         }
         AuthorizationFlowResponseStatus::Failed {
-            failure_stage,
+            failure_stage: _,
             failure_reason,
         } => Err(Error::msg(format!(
             "Authorization flow was not started successfully. Reason: {}",
