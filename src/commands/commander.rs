@@ -116,10 +116,9 @@ impl Commander {
             .arg("--url")
             .arg(route_to.as_str())
             .stdout(Stdio::piped())
-            .spawn()
-            .expect("Cloudflared cloud not be initiated");
+            .spawn()?;
 
-        let stdout = child.stderr.take().expect("no std out");
+        let stdout = child.stderr.take().context("No stderr found")?;
         let mut reader = BufReader::new(stdout).lines();
 
         tokio::spawn(async move {
@@ -127,23 +126,30 @@ impl Commander {
             let status = child
                 .wait()
                 .await
-                .expect("child process encountered an error");
+                .expect("Child process encountered an error");
+
 
             println!("child status was: {}", status);
         });
 
         let mut tunnel_created = false;
+        let mut line_counter = 0;
         while let Some(line) = reader.next_line().await.unwrap() {
+            line_counter += 1;
+            // It has been 20 lines and we still have not found the URL, we should bail
+            if line_counter == 20 && !tunnel_created {
+                return Err(Error::msg("Could not create a public tunnel url"));
+            }
             if !tunnel_created {
                 match extract_url(&line) {
                     Ok(url) => {
                         println!("{} {}", "Created tunnel with url :".green(), url.cyan());
                         tunnel_created = true;
                     },
-                    Err(e) => {},
+                    Err(_e) => {},
                 };
             } else {
-               println!("{}", line.green())
+               println!("{}", line.yellow())
             }
         }
 
