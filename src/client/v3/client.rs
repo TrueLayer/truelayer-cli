@@ -1,6 +1,6 @@
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
 use crate::client::v3::payment::create::create_merchant_account_payment;
-use crate::client::v3::payment::mockprovider::execute_payment;
+use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
 use truelayer_rust::apis::auth::Token;
 use truelayer_rust::client::Environment;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
@@ -47,5 +47,9 @@ impl Client {
 
     pub async fn execute_payment(&self, payment_id: &str, token: &str) -> anyhow::Result<()> {
         execute_payment(payment_id, token).await
+    }
+
+    pub async fn fail_payment(&self, payment_id: &str, token: &str) -> anyhow::Result<()> {
+        fail_authorization(payment_id, token).await
     }
 }

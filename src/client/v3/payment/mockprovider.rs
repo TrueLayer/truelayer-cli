@@ -3,7 +3,7 @@ use serde_json::json;
 
 // const PROVIDER_ACTION: &str = "https://pay-mock-connect.truelayer-sandbox.com/api/single-immediate-payments/{}/action";
 
-pub async fn execute_payment(payment_id: &str, token: &str) -> anyhow::Result<()> {
+async fn submit_action(payment_id: &str, token: &str, action: &str) -> anyhow::Result<()> {
     let mock_provider_endpoint = format!(
         "https://pay-mock-connect.truelayer-sandbox.com/api/single-immediate-payments/{}/action",
         payment_id
@@ -11,7 +11,7 @@ pub async fn execute_payment(payment_id: &str, token: &str) -> anyhow::Result<()
     match reqwest::Client::new()
         .post(mock_provider_endpoint)
         .json(&json!({
-            "action": "Execute",
+            "action": action,
             "redirect": false
         }))
         .header("authority", "pay-mock-connect.truelayer-sandbox.com")
@@ -31,4 +31,12 @@ pub async fn execute_payment(payment_id: &str, token: &str) -> anyhow::Result<()
         }
         Err(e) => anyhow::bail!(e),
     }
+}
+
+pub async fn execute_payment(payment_id: &str, token: &str) -> anyhow::Result<()> {
+    submit_action(payment_id, token, "Execute").await
+}
+
+pub async fn fail_authorization(payment_id: &str, token: &str) -> anyhow::Result<()> {
+    submit_action(payment_id, token, "RejectAuthorisation").await
 }

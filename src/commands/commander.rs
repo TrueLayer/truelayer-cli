@@ -62,7 +62,7 @@ fn extract_url(line: &str) -> anyhow::Result<String> {
 }
 
 impl Commander {
-    pub async fn generate_settled_event(&self) -> anyhow::Result<()> {
+    async fn create_auth_uri(&self) -> anyhow::Result<String> {
         println!("{}", "Creating merchant account payment".yellow());
         let payment_id = self
             .client
@@ -78,13 +78,16 @@ impl Commander {
         );
 
         println!("{}", "Starting auth flow".yellow());
-        let uri = self
-            .client
+        self.client
             .as_ref()
             .unwrap()
             .start_authorization(&payment_id)
             .await
-            .context("Error while starting authorization flow")?;
+            .context("Error while starting authorization flow")
+    }
+
+    pub async fn generate_settled_event(&self) -> anyhow::Result<()> {
+        let uri = self.create_auth_uri().await?;
         println!("{}", "Authflow successfully started".green());
 
         let mock_payment_id =
@@ -104,6 +107,31 @@ impl Commander {
             .await
             .context("Error while executing the payment")?;
         println!("{}", "Payment executed".green());
+        println!("{}", "Completed".green());
+        Ok(())
+    }
+
+    pub async fn generate_failed_event(&self) -> anyhow::Result<()> {
+        let uri = self.create_auth_uri().await?;
+        println!("{}", "Authflow successfully started".green());
+
+        let mock_payment_id =
+            extract_mock_payment_id(&uri).context("Could not extract mock payment id")?;
+        let token = extract_token_from_uri(&uri);
+        println!(
+            "{} {}",
+            "Mock payment_id: ".green(),
+            mock_payment_id.as_str().cyan()
+        );
+
+        println!("{}", "Failing payment".yellow());
+        self.client
+            .as_ref()
+            .unwrap()
+            .fail_payment(&mock_payment_id, &token.unwrap())
+            .await
+            .context("Error while failing the payment")?;
+        println!("{}", "Payment failure executed".green());
         println!("{}", "Completed".green());
         Ok(())
     }
