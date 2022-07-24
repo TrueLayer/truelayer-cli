@@ -1,0 +1,17 @@
+name: Release
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+jobs:
+  build_macos:
+    name: Build for macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release --all-features
+      - run: cd target/release & tar -czf truelayer.tar.gz truelayer
