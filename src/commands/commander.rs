@@ -122,9 +122,8 @@ impl Commander {
         let stdout = child.stderr.take().expect("no std out");
         let mut reader = BufReader::new(stdout).lines();
 
-        // Ensure the child process is spawned in the runtime so it can
-        // make progress on its own while we await for any output.
         tokio::spawn(async move {
+            println!("{}", "Creating a tunnel".yellow());
             let status = child
                 .wait()
                 .await
@@ -133,12 +132,19 @@ impl Commander {
             println!("child status was: {}", status);
         });
 
+        let mut tunnel_created = false;
         while let Some(line) = reader.next_line().await.unwrap() {
-            println!("Line: {}", line);
-            match extract_url(&line) {
-                Ok(url) => println!("url = {}", url),
-                Err(e) => println!("not found"),
-            };
+            if !tunnel_created {
+                match extract_url(&line) {
+                    Ok(url) => {
+                        println!("{} {}", "Created tunnel with url :".green(), url.cyan());
+                        tunnel_created = true;
+                    },
+                    Err(e) => {},
+                };
+            } else {
+               println!("{}", line.green())
+            }
         }
 
         Ok(())

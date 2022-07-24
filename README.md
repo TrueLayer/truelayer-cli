@@ -20,3 +20,11 @@ truelayer generate-webhook
       executed-settled
 
 ```
+
+### Create a tunnel to a local app
+
+Creates an HTTP tunnel to `localhost:8080`
+
+```
+ create-tunnel --route-to localhost:8080
+```
