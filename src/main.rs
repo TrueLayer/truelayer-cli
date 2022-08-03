@@ -1,4 +1,5 @@
 mod client;
+mod platform;
 mod commands;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
@@ -22,6 +23,11 @@ enum Commands {
         #[clap(long, value_parser)]
         route_to: String,
     },
+
+    TlCreateTunnel {
+        #[clap(long, value_parser)]
+        route_to: String,
+    }
 }
 
 #[derive(Subcommand, Debug)]
@@ -75,6 +81,12 @@ async fn main() {
                 Ok(_) => println!("Was okay"),
                 Err(e) => panic!("{}", e),
             }
-        }
+        },
+        Commands::TlCreateTunnel { route_to } => {
+            match commands::commander::new().create_tunnel(route_to).await {
+                Ok(_) => println!("Was okay"),
+                Err(e) => panic!("{}", e),
+            }
+        },
     }
 }

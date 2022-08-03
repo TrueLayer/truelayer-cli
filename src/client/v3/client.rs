@@ -1,3 +1,4 @@
+use anyhow::Error;
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
 use crate::client::v3::payment::create::create_merchant_account_payment;
 use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
@@ -51,5 +52,13 @@ impl Client {
 
     pub async fn fail_payment(&self, payment_id: &str, token: &str) -> anyhow::Result<()> {
         fail_authorization(payment_id, token).await
+    }
+
+    pub async fn get_token(&self) -> anyhow::Result<String> {
+       self.truelayer_client.auth.get_access_token().await.map(|r| {
+           r.access_token().token().expose_secret().to_string()
+       }).map_err(|e| {
+           Error::new(e)
+       })
     }
 }

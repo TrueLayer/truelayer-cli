@@ -8,6 +8,9 @@ use std::process::Stdio;
 use std::str;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
+use crate::client::v3::client;
+use crate::platform::client::Client as AsyncClient;
+use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
 
 pub struct Commander {
     client: Option<Client>,
@@ -182,5 +185,9 @@ impl Commander {
         }
 
         Ok(())
+    }
+
+    pub async fn create_tl_tunnel(&self, route_to: String) -> anyhow::Result<()> {
+        AsyncClient::init("localhost:7000".into(), self.client.as_ref().unwrap()).await?
     }
 }

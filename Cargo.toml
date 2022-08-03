@@ -14,3 +14,9 @@ clap = { version = "3.2.8", features = ["derive"]}
 tokio = { version = "1.3.0", features = ["full"]}
 regex = "1.6.0"
 colored = "*"
+pubnub-hyper = { git = "https://github.com/pubnub/rust" }
+futures = "0.3.21"
+serde = "*"
+futures-util = "0.3.21"
+timer = "0.2.0"
+chrono = "0.4"
