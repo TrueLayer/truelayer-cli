@@ -1,6 +1,6 @@
 mod client;
-mod platform;
 mod commands;
+mod platform;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
 use std::fs;
@@ -27,13 +27,13 @@ enum Commands {
     TlCreateTunnel {
         #[clap(long, value_parser)]
         route_to: String,
-    }
+    },
 }
 
 #[derive(Subcommand, Debug)]
 enum GenerateWehookMode {
     ExecutedSettled {},
-    Failed {}
+    Failed {},
 }
 
 #[derive(Parser, Debug)]
@@ -68,12 +68,10 @@ async fn main() {
                         Err(e) => println!("Error: {}", e.to_string().as_str().red()),
                     }
                 }
-                GenerateWehookMode::Failed {} => {
-                    match commander.generate_failed_event().await {
-                        Ok(_) => {}
-                        Err(e) => println!("Error: {}", e.to_string().as_str().red()),
-                    }
-                }
+                GenerateWehookMode::Failed {} => match commander.generate_failed_event().await {
+                    Ok(_) => {}
+                    Err(e) => println!("Error: {}", e.to_string().as_str().red()),
+                },
             }
         }
         Commands::CreateTunnel { route_to } => {
@@ -81,12 +79,12 @@ async fn main() {
                 Ok(_) => println!("Was okay"),
                 Err(e) => panic!("{}", e),
             }
-        },
+        }
         Commands::TlCreateTunnel { route_to } => {
             match commands::commander::new().create_tunnel(route_to).await {
                 Ok(_) => println!("Was okay"),
                 Err(e) => panic!("{}", e),
             }
-        },
+        }
     }
 }

@@ -1,5 +1,7 @@
+use crate::client::v3::client;
 use crate::client::v3::client::new as new_client;
 use crate::client::v3::client::Client;
+use crate::platform::client::Client as AsyncClient;
 use anyhow::{Context, Error};
 use colored::Colorize;
 use regex::Regex;
@@ -8,8 +10,6 @@ use std::process::Stdio;
 use std::str;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
-use crate::client::v3::client;
-use crate::platform::client::Client as AsyncClient;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
 
 pub struct Commander {
@@ -159,7 +159,6 @@ impl Commander {
                 .await
                 .expect("Child process encountered an error");
 
-
             println!("child status was: {}", status);
         });
 
@@ -176,11 +175,11 @@ impl Commander {
                     Ok(url) => {
                         println!("{} {}", "Created tunnel with url :".green(), url.cyan());
                         tunnel_created = true;
-                    },
-                    Err(_e) => {},
+                    }
+                    Err(_e) => {}
                 };
             } else {
-               println!("{}", line.yellow())
+                println!("{}", line.yellow())
             }
         }
 

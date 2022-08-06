@@ -1,20 +1,13 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct WebhookRequest {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Webhook {
     pub headers: HashMap<String, String>,
     pub body: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Message {
-    pub typ: MessageType,
-    pub payload: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub enum MessageType {
-    WebhookRequest,
-    Ping,
+pub struct PullResponse {
+    pub webhooks: Vec<Webhook>,
 }

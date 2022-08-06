@@ -1,7 +1,7 @@
-use anyhow::Error;
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
 use crate::client::v3::payment::create::create_merchant_account_payment;
 use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
+use anyhow::Error;
 use truelayer_rust::apis::auth::Token;
 use truelayer_rust::client::Environment;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
@@ -55,10 +55,11 @@ impl Client {
     }
 
     pub async fn get_token(&self) -> anyhow::Result<String> {
-       self.truelayer_client.auth.get_access_token().await.map(|r| {
-           r.access_token().token().expose_secret().to_string()
-       }).map_err(|e| {
-           Error::new(e)
-       })
+        self.truelayer_client
+            .auth
+            .get_access_token()
+            .await
+            .map(|r| r.access_token().token().expose_secret().to_string())
+            .map_err(|e| Error::new(e))
     }
 }
