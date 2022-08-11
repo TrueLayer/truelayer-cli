@@ -27,6 +27,10 @@ enum Commands {
     TlCreateTunnel {
         #[clap(long, value_parser)]
         route_to: String,
+        #[clap(long, value_parser)]
+        client_secret: String,
+        #[clap(long, value_parser)]
+        client_id: String,
     },
 }
 
@@ -80,8 +84,13 @@ async fn main() {
                 Err(e) => panic!("{}", e),
             }
         }
-        Commands::TlCreateTunnel { route_to } => {
-            match commands::commander::new().create_tunnel(route_to).await {
+        Commands::TlCreateTunnel {
+            route_to,
+            client_id,
+            client_secret,
+        } => {
+            let commander = commands::commander::new_with_auth_client(client_id, client_secret);
+            match commander.create_tl_tunnel(route_to).await {
                 Ok(_) => println!("Was okay"),
                 Err(e) => panic!("{}", e),
             }

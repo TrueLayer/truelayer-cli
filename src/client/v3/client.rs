@@ -1,38 +1,44 @@
-use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
-use crate::client::v3::payment::create::create_merchant_account_payment;
-use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
+use std::str::FromStr;
+
 use anyhow::Error;
 use truelayer_rust::apis::auth::Token;
 use truelayer_rust::client::Environment;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
 
-fn new_truelayer_client(
-    client_id: String,
-    client_secret: Token,
-    kid: String,
-    private_key: Vec<u8>,
-) -> truelayer_rust::TrueLayerClient {
-    TrueLayerClient::builder(Credentials::ClientCredentials {
+use url::Url;
+
+use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
+use crate::client::v3::payment::create::create_merchant_account_payment;
+use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
+
+pub fn new(client_id: String, client_secret: Token, kid: String, private_key: Vec<u8>) -> Client {
+    let tl_client = TrueLayerClient::builder(Credentials::ClientCredentials {
         client_id,
         client_secret,
         scope: "payments".into(),
     })
     .with_signing_key(kid.as_ref(), private_key)
     .with_environment(Environment::Sandbox)
-    .build()
-}
-
-pub fn new(client_id: String, client_secret: String, kid: String, private_key: String) -> Client {
+    .build();
     Client {
-        truelayer_client: new_truelayer_client(
-            client_id,
-            client_secret.into(),
-            kid,
-            private_key.into(),
-        ),
+        truelayer_client: tl_client,
     }
 }
 
+pub fn new_auth_client(client_id: String, client_secret: Token) -> Client {
+    let tl_client = TrueLayerClient::builder(Credentials::ClientCredentials {
+        client_id,
+        client_secret,
+        scope: "payments".into(),
+    })
+    .with_environment(Environment::Sandbox)
+    .build();
+    Client {
+        truelayer_client: tl_client,
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Client {
     truelayer_client: TrueLayerClient,
 }

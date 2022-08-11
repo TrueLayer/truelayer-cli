@@ -1,7 +1,7 @@
 use crate::client::v3::client;
-use crate::client::v3::client::new as new_client;
 use crate::client::v3::client::Client;
-use crate::platform::client::Client as AsyncClient;
+use crate::client::v3::client::{new as new_client, new_auth_client};
+use crate::platform::client::{WebhookRouterClient as AsyncClient, WebhookRouterClient};
 use anyhow::{Context, Error};
 use colored::Colorize;
 use regex::Regex;
@@ -23,7 +23,18 @@ pub fn new_with_client(
     private_key: String,
 ) -> Commander {
     Commander {
-        client: Some(new_client(client_id, client_secret, kid, private_key)),
+        client: Some(new_client(
+            client_id,
+            client_secret.into(),
+            kid,
+            private_key.into(),
+        )),
+    }
+}
+
+pub fn new_with_auth_client(client_id: String, client_secret: String) -> Commander {
+    Commander {
+        client: Some(new_auth_client(client_id, client_secret.into())),
     }
 }
 
@@ -187,6 +198,8 @@ impl Commander {
     }
 
     pub async fn create_tl_tunnel(&self, route_to: String) -> anyhow::Result<()> {
-        AsyncClient::init("localhost:7000".into(), self.client.as_ref().unwrap()).await?
+        let mut webhook_router_client =
+            WebhookRouterClient::init(self.client.as_ref().unwrap().clone(), route_to).await?;
+        webhook_router_client.start().await
     }
 }
