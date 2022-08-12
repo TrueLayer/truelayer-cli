@@ -66,6 +66,6 @@ impl Client {
             .get_access_token()
             .await
             .map(|r| r.access_token().token().expose_secret().to_string())
-            .map_err(|e| Error::new(e))
+            .map_err(Error::new)
     }
 }

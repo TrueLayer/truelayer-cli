@@ -79,20 +79,18 @@ impl Runner {
                         );
                     } else {
                         println!(
-                            "{} {} {} {}",
+                            "{} {}  with status code:  {}",
                             "A webhook has failed to be routed to address ".yellow(),
                             self.route_to.cyan(),
-                            " with status code: ",
                             resp.status()
                         );
                     }
                 }
                 Err(e) => {
                     println!(
-                        "{} {} {} {}",
+                        "{} {}  has failed, with error:  {}",
                         "HTTP request to the route address ".red(),
                         self.route_to.cyan(),
-                        " has failed, with error: ",
                         e
                     );
                 }
@@ -128,10 +126,9 @@ impl Runner {
                 }
                 Err(e) => {
                     println!(
-                        "{} {} {} {}",
+                        "{} {}  has failed. If it continues, restart the CLI program, error:  {}",
                         "HTTP request to the server ".bright_red(),
                         self.route_to.cyan(),
-                        " has failed. If it continues, restart the CLI program, error: ",
                         e
                     );
                 }
