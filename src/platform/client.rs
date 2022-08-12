@@ -56,9 +56,9 @@ impl Runner {
     async fn send_webhooks(&self, webhooks: Vec<Webhook>) -> anyhow::Result<()> {
         let webhooks_c = webhooks.clone();
         for wh in webhooks_c.iter() {
-            println!("webhook body: {}", wh.body);
             let mut builder = reqwest::Client::new()
                 .post(&self.route_to)
+                .body(wh.body.clone())
                 .bearer_auth(&self.token);
 
             for (k, v) in wh.headers.iter() {
