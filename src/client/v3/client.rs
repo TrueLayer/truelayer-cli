@@ -1,11 +1,7 @@
-
-
 use anyhow::Error;
 use truelayer_rust::apis::auth::Token;
 use truelayer_rust::client::Environment;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
-
-
 
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
 use crate::client::v3::payment::create::create_merchant_account_payment;

@@ -1,7 +1,6 @@
-
 use crate::client::v3::client::Client;
 use crate::client::v3::client::{new as new_client, new_auth_client};
-use crate::platform::client::{WebhookRouterClient};
+use crate::platform::client::WebhookRouterClient;
 use anyhow::{Context, Error};
 use colored::Colorize;
 use regex::Regex;
@@ -10,7 +9,6 @@ use std::process::Stdio;
 use std::str;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
-
 
 pub struct Commander {
     client: Option<Client>,
