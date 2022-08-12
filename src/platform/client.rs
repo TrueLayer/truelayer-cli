@@ -53,7 +53,7 @@ struct Runner {
 }
 
 impl Runner {
-    async fn send_webhooks(&self, webhooks: Vec<Webhook>) -> anyhow::Result<()> {
+    async fn send_webhooks(&self, webhooks: Vec<Webhook>) {
         let webhooks_c = webhooks.clone();
         for wh in webhooks_c.iter() {
             let mut builder = reqwest::Client::new()
@@ -98,8 +98,6 @@ impl Runner {
                 }
             }
         }
-
-        Ok(())
     }
 
     pub async fn fetch(&self) -> anyhow::Result<()> {
@@ -141,7 +139,5 @@ impl Runner {
 
             tokio::time::sleep(Duration::from_secs(5)).await;
         }
-
-        Err(Error::msg("Exited the loop prematurely"))
     }
 }
