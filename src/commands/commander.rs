@@ -5,10 +5,7 @@ use anyhow::{Context, Error};
 use colored::Colorize;
 use regex::Regex;
 use reqwest::Url;
-use std::process::Stdio;
 use std::str;
-use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::process::Command;
 
 pub struct Commander {
     client: Option<Client>,
@@ -36,10 +33,6 @@ pub fn new_with_auth_client(client_id: String, client_secret: String) -> Command
     }
 }
 
-pub fn new() -> Commander {
-    Commander { client: None }
-}
-
 fn extract_token_from_uri(uri: &str) -> anyhow::Result<String> {
     let parsed_uri = Url::parse(uri)?;
     let re = Regex::new(r"token=(.+)")?;
@@ -63,14 +56,6 @@ fn extract_mock_payment_id(uri: &str) -> anyhow::Result<String> {
         .last()
         .ok_or_else(|| Error::msg("Could not get payment id from uri"))?;
     Ok(String::from(mock_id))
-}
-
-fn extract_url(line: &str) -> anyhow::Result<String> {
-    let re = Regex::new(r"\|  (https.+)\s")?;
-    re.captures(line)
-        .ok_or_else(|| Error::msg("Could not capture https pattern"))?
-        .get(1)
-        .map_or(Err(Error::msg("No urls found")), |m| Ok(m.as_str().into()))
 }
 
 impl Commander {
