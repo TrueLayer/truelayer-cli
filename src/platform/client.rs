@@ -14,20 +14,20 @@ pub const WEBHOOK_ROUTER_URI: &str = "https://webhook-router.truelayer-sandbox.c
 
 pub struct WebhookRouterClient {
     token: String,
-    route_to: String,
+    addr: String,
 }
 
 impl WebhookRouterClient {
-    pub async fn init(client: v3::client::Client, route_to: String) -> anyhow::Result<Self> {
+    pub async fn init(client: v3::client::Client, addr: String) -> anyhow::Result<Self> {
         let token = client.get_token().await?;
 
-        Ok(WebhookRouterClient { token, route_to })
+        Ok(WebhookRouterClient { token, addr: addr })
     }
 
     pub async fn start(&mut self) -> anyhow::Result<()> {
         let runner = Runner {
             token: self.token.clone(),
-            route_to: self.route_to.clone(),
+            addr: self.addr.clone(),
         };
 
         match runner.fetch().await {
@@ -39,7 +39,7 @@ impl WebhookRouterClient {
 
 struct Runner {
     token: String,
-    route_to: String,
+    addr: String,
 }
 
 impl Runner {
@@ -47,7 +47,7 @@ impl Runner {
         let webhooks_c = webhooks.clone();
         for wh in webhooks_c.iter() {
             let mut builder = reqwest::Client::new()
-                .post(&self.route_to)
+                .post(&self.addr)
                 .body(wh.body.clone())
                 .bearer_auth(&self.token);
 
@@ -65,13 +65,13 @@ impl Runner {
                         println!(
                             "{} {}",
                             "A webhook was successfully routed to address".green(),
-                            self.route_to.cyan()
+                            self.addr.cyan()
                         );
                     } else {
                         println!(
                             "{} {}  with status code:  {}",
                             "A webhook has failed to be routed to address ".yellow(),
-                            self.route_to.cyan(),
+                            self.addr.cyan(),
                             resp.status()
                         );
                     }
@@ -80,7 +80,7 @@ impl Runner {
                     println!(
                         "{} {}  has failed, with error:  {}",
                         "HTTP request to the route address ".red(),
-                        self.route_to.cyan(),
+                        self.addr.cyan(),
                         e
                     );
                 }
@@ -118,7 +118,7 @@ impl Runner {
                     println!(
                         "{} {}  has failed. If it continues, restart the CLI program, error:  {}",
                         "HTTP request to the server ".bright_red(),
-                        self.route_to.cyan(),
+                        self.addr.cyan(),
                         e
                     );
                 }

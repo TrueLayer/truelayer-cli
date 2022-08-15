@@ -19,14 +19,9 @@ enum Commands {
         #[clap(long, value_parser)]
         kid: String,
     },
-    CreateTunnel {
+    RouteWebhooks {
         #[clap(long, value_parser)]
-        route_to: String,
-    },
-
-    TlCreateTunnel {
-        #[clap(long, value_parser)]
-        route_to: String,
+        to_addr: String,
         #[clap(long, value_parser)]
         client_secret: String,
         #[clap(long, value_parser)]
@@ -78,19 +73,13 @@ async fn main() {
                 },
             }
         }
-        Commands::CreateTunnel { route_to } => {
-            match commands::commander::new().create_tunnel(route_to).await {
-                Ok(_) => println!("Was okay"),
-                Err(e) => panic!("{}", e),
-            }
-        }
-        Commands::TlCreateTunnel {
-            route_to,
+        Commands::RouteWebhooks {
+            to_addr,
             client_id,
             client_secret,
         } => {
             let commander = commands::commander::new_with_auth_client(client_id, client_secret);
-            match commander.create_tl_tunnel(route_to).await {
+            match commander.create_tunnel(to_addr).await {
                 Ok(_) => println!("Was okay"),
                 Err(e) => panic!("{}", e),
             }
