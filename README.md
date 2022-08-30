@@ -32,5 +32,8 @@ truelayer generate-webhook
 Creates an HTTP tunnel to `localhost:8080`
 
 ```
- create-tunnel --route-to localhost:8080
+truelayer route-webhooks 
+    --to-addr http://localhost:8080 
+    --client-id {client_id} 
+    --client-secret {client_secret}
 ```
