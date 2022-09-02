@@ -21,7 +21,7 @@ impl WebhookRouterClient {
     pub async fn init(client: v3::client::Client, addr: String) -> anyhow::Result<Self> {
         let token = client.get_token().await?;
 
-        Ok(WebhookRouterClient { token, addr: addr })
+        Ok(WebhookRouterClient { token, addr })
     }
 
     pub async fn start(&mut self) -> anyhow::Result<()> {
