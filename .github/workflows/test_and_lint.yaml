@@ -1,4 +1,4 @@
-name: Build, test, lint
+name: Test, format, lint
 on: push
 jobs:
   test:
@@ -44,18 +44,3 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: -- -D warnings
-
-  build_macos:
-    name: Build for macos
-    runs-on: macos-latest
-    needs:
-      - test
-      - fmt
-      - clippy
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: cargo build --release --all-features
-      - run: cd target/release & tar -czf truelayer.tar.gz truelayer
