@@ -11,3 +11,11 @@ pub struct Webhook {
 pub struct PullResponse {
     pub webhooks: Vec<Webhook>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct WebhookMessage {
+    pub event_id: String,
+    pub payment_id: String,
+    #[serde(rename = "type")]
+    pub typ: String,
+}

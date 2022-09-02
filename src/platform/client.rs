@@ -5,7 +5,7 @@ use colored::Colorize;
 
 use crate::client::v3;
 use crate::platform::model;
-use crate::platform::model::Webhook;
+use crate::platform::model::{Webhook, WebhookMessage};
 
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -46,6 +46,14 @@ impl Runner {
     async fn send_webhooks(&self, webhooks: Vec<Webhook>) {
         let webhooks_c = webhooks.clone();
         for wh in webhooks_c.iter() {
+            let webhook_message: WebhookMessage = match serde_json::from_str::<WebhookMessage>(wh.body.clone().as_str()) {
+                Ok(wm) => wm,
+                Err(e) => {
+                    println!("Error while deserialising webhook message {}", e);
+                    continue;
+                }
+            };
+
             let mut builder = reqwest::Client::new()
                 .post(&self.addr)
                 .body(wh.body.clone())
@@ -63,24 +71,44 @@ impl Runner {
                 Ok(resp) => {
                     if resp.status().is_success() {
                         println!(
-                            "{} {}",
-                            "A webhook was successfully routed to address".green(),
-                            self.addr.cyan()
+                            "{} {}, {} {}, {} {}, => {}, {}",
+                            "Type: ",
+                            webhook_message.typ.cyan(),
+                            "Event id:",
+                            webhook_message.event_id.cyan(),
+                            "Payment id:",
+                            webhook_message.payment_id.cyan(),
+                            self.addr.cyan(),
+                            "SUCCESS".green()
                         );
                     } else {
                         println!(
-                            "{} {}  with status code:  {}",
-                            "A webhook has failed to be routed to address ".yellow(),
+                            "{} {}, {} {}, {} {}, => {}, {}, {} {}",
+                            "Type: ",
+                            webhook_message.typ.cyan(),
+                            "Event id:",
+                            webhook_message.event_id.cyan(),
+                            "Payment id:",
+                            webhook_message.payment_id.cyan(),
                             self.addr.cyan(),
+                            "FAILURE".red(),
+                            "status:",
                             resp.status()
                         );
                     }
                 }
                 Err(e) => {
                     println!(
-                        "{} {}  has failed, with error:  {}",
-                        "HTTP request to the route address ".red(),
+                        "{} {}, {} {}, {} {}, => {}, {}, {} {}",
+                        "Type: ",
+                        webhook_message.typ.cyan(),
+                        "Event id:",
+                        webhook_message.event_id.cyan(),
+                        "Payment id:",
+                        webhook_message.payment_id.cyan(),
                         self.addr.cyan(),
+                        "FAILURE".red(),
+                        "error:",
                         e
                     );
                 }
