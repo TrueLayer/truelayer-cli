@@ -31,7 +31,7 @@ enum Commands {
 
 #[derive(Subcommand, Debug)]
 enum GenerateWehookMode {
-    ExecutedSettled {},
+    Executed {},
     Failed {},
 }
 
@@ -61,7 +61,7 @@ async fn main() {
             );
 
             match mode {
-                GenerateWehookMode::ExecutedSettled {} => {
+                GenerateWehookMode::Executed {} => {
                     match commander.generate_settled_event().await {
                         Ok(_) => {}
                         Err(e) => println!("Error: {}", e.to_string().as_str().red()),

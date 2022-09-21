@@ -5,7 +5,7 @@
 
 ### Generate webhooks
 
-*Generate executed and settled webhooks*
+*Generate executed webhook*
 
 ```
 truelayer generate-webhook 
@@ -13,7 +13,7 @@ truelayer generate-webhook
     --client-id {client_id} 
     --client-secret {client_secret}
     --kid {private_id_key_from_console}
-      executed-settled
+      executed
 ```
 
 *Generate failed webhook*

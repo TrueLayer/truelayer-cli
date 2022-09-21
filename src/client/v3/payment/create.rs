@@ -1,8 +1,5 @@
 use crate::client::v3::payment::merchant_account::get_gbp_merchant_account_id;
-use truelayer_rust::apis::payments::{
-    Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency, PaymentMethod,
-    ProviderSelection,
-};
+use truelayer_rust::apis::payments::{AccountIdentifier, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency, PaymentMethod, ProviderSelection};
 
 // pub async fn create_payment(client: &truelayer_rust::TrueLayerClient) -> anyhow::Result<String> {
 //     let resp = client
@@ -50,9 +47,13 @@ pub async fn create_merchant_account_payment(
                     scheme_id: "faster_payments_service".to_string(),
                     remitter: None,
                 },
-                beneficiary: Beneficiary::MerchantAccount {
-                    account_holder_name: Some("John doe".to_string()),
-                    merchant_account_id: get_gbp_merchant_account_id(client).await?,
+                beneficiary: Beneficiary::ExternalAccount {
+                    account_holder_name: "John doe".to_string(),
+                    account_identifier: AccountIdentifier::SortCodeAccountNumber {
+                        sort_code: "000000".to_string(),
+                        account_number: "12345678".to_string(),
+                    },
+                    reference: "(LegacyReturn)".to_string(),
                 },
             },
             user: CreatePaymentUserRequest::NewUser {
