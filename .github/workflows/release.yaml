@@ -24,4 +24,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ozumsafaoglu291/truelayer-cli:latest
+          tags: truelayer/truelayer-cli:latest
