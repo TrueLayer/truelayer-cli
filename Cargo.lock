@@ -1270,7 +1270,7 @@ dependencies = [
 [[package]]
 name = "truelayer-rust"
 version = "0.1.0"
-source = "git+https://github.com/TrueLayer/truelayer-rust#a8b8f6d9e16d594c092bc3067d8032f4fbb814c3"
+source = "git+https://github.com/TrueLayer/truelayer-rust#1afa9df98d0fcacaaf44edec80057b1e3cf0eea2"
 dependencies = [
  "anyhow",
  "async-trait",

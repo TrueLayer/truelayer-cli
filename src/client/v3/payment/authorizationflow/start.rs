@@ -19,6 +19,7 @@ pub async fn start_authorization_flow(
                     return_uri: "http://localhost:3000/callback".to_string(),
                     direct_return_uri: None,
                 }),
+                consent: None,
                 form: None,
             },
         )
