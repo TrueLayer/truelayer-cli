@@ -1,5 +1,5 @@
 use crate::client::v3::payment::merchant_account::get_gbp_merchant_account_id;
-use truelayer_rust::apis::payments::{AccountIdentifier, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency, PaymentMethod, ProviderSelection};
+use truelayer_rust::apis::payments::{AccountIdentifier, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency, PaymentMethod, PaymentMethodRequest, ProviderSelection, ProviderSelectionRequest};
 
 // pub async fn create_payment(client: &truelayer_rust::TrueLayerClient) -> anyhow::Result<String> {
 //     let resp = client
@@ -41,8 +41,8 @@ pub async fn create_merchant_account_payment(
         .create(&CreatePaymentRequest {
             amount_in_minor: 15,
             currency: Currency::Gbp,
-            payment_method: PaymentMethod::BankTransfer {
-                provider_selection: ProviderSelection::Preselected {
+            payment_method: PaymentMethodRequest::BankTransfer {
+                provider_selection: ProviderSelectionRequest::Preselected {
                     provider_id: "mock-payments-gb-redirect".to_string(),
                     scheme_id: "faster_payments_service".to_string(),
                     remitter: None,
