@@ -62,7 +62,7 @@ async fn main() {
 
             match mode {
                 GenerateWehookMode::Executed {} => {
-                    match commander.generate_settled_event().await {
+                    match commander.generate_executed_event().await {
                         Ok(_) => {}
                         Err(e) => println!("Error: {}", e.to_string().as_str().red()),
                     }

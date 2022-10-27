@@ -4,7 +4,7 @@ use truelayer_rust::client::Environment;
 use truelayer_rust::{apis::auth::Credentials, TrueLayerClient};
 
 use crate::client::v3::payment::authorizationflow::start::start_authorization_flow;
-use crate::client::v3::payment::create::create_merchant_account_payment;
+use crate::client::v3::payment::create::create_external_account_payment;
 use crate::client::v3::payment::mockprovider::{execute_payment, fail_authorization};
 
 pub fn new(client_id: String, client_secret: Token, kid: String, private_key: Vec<u8>) -> Client {
@@ -40,8 +40,8 @@ pub struct Client {
 }
 
 impl Client {
-    pub async fn create_merchant_account_payment(&self) -> anyhow::Result<String> {
-        create_merchant_account_payment(&self.truelayer_client).await
+    pub async fn create_external_account_payment(&self) -> anyhow::Result<String> {
+        create_external_account_payment(&self.truelayer_client).await
     }
 
     pub async fn start_authorization(&self, payment_id: &str) -> anyhow::Result<String> {

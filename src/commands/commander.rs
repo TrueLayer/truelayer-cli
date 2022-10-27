@@ -60,14 +60,13 @@ fn extract_mock_payment_id(uri: &str) -> anyhow::Result<String> {
 
 impl Commander {
     async fn create_auth_uri(&self) -> anyhow::Result<String> {
-        println!("{}", "Creating merchant account payment".yellow());
+        println!("{}", "Creating external account payment".yellow());
         let payment_id = self
             .client
             .as_ref()
             .unwrap()
-            .create_merchant_account_payment()
-            .await
-            .context("Error while creating merchant account payment")?;
+            .create_external_account_payment()
+            .await?;
         println!(
             "{} {}",
             "Created payment with id".green(),
@@ -83,7 +82,7 @@ impl Commander {
             .context("Error while starting authorization flow")
     }
 
-    pub async fn generate_settled_event(&self) -> anyhow::Result<()> {
+    pub async fn generate_executed_event(&self) -> anyhow::Result<()> {
         let uri = self.create_auth_uri().await?;
         println!("{}", "Authflow successfully started".green());
 
