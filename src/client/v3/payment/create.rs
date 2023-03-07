@@ -1,5 +1,7 @@
-use crate::client::v3::payment::merchant_account::get_gbp_merchant_account_id;
-use truelayer_rust::apis::payments::{AccountIdentifier, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency, PaymentMethod, PaymentMethodRequest, ProviderSelection, ProviderSelectionRequest};
+use truelayer_rust::apis::payments::{
+    AccountIdentifier, Beneficiary, CreatePaymentRequest, CreatePaymentUserRequest, Currency,
+    PaymentMethodRequest, ProviderSelectionRequest,
+};
 
 pub async fn create_external_account_payment(
     client: &truelayer_rust::TrueLayerClient,

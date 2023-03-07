@@ -46,13 +46,14 @@ impl Runner {
     async fn send_webhooks(&self, webhooks: Vec<Webhook>) {
         let webhooks_c = webhooks.clone();
         for wh in webhooks_c.iter() {
-            let webhook_message: WebhookMessage = match serde_json::from_str::<WebhookMessage>(wh.body.clone().as_str()) {
-                Ok(wm) => wm,
-                Err(e) => {
-                    println!("Error while deserialising webhook message {}", e);
-                    continue;
-                }
-            };
+            let webhook_message: WebhookMessage =
+                match serde_json::from_str::<WebhookMessage>(wh.body.clone().as_str()) {
+                    Ok(wm) => wm,
+                    Err(e) => {
+                        println!("Error while deserialising webhook message {}", e);
+                        continue;
+                    }
+                };
 
             let mut builder = reqwest::Client::new()
                 .post(&self.addr)

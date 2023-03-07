@@ -1,7 +1,7 @@
 use anyhow::Error;
 use truelayer_rust::apis::payments::Currency;
 
-pub async fn get_gbp_merchant_account_id(
+pub async fn _get_gbp_merchant_account_id(
     client: &truelayer_rust::TrueLayerClient,
 ) -> anyhow::Result<String> {
     client
