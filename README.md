@@ -5,7 +5,7 @@
 
 ### Generate webhooks
 
-*Generate executed webhook*
+*generate executed webhook*
 
 ```
 truelayer generate-webhook 
